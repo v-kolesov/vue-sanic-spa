@@ -1,0 +1,55 @@
+version: '3.7'
+networks:
+  web:
+    driver: bridge
+  internal:
+    driver: bridge
+
+services:  
+  redis:
+    container_name: test_redis
+    image: "redis:latest"
+    volumes:
+      - ${PWD} .data/redis:/data        
+    networks:
+      - internal
+
+  db:
+    restart: always
+    container_name: test_db
+    image: postgres:alpine
+    
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - internal
+    volumes:
+      - ${PWD}/.data/postgresql:/var/lib/postgresql/data
+      - ${PWD}/db_entrypoint:/docker-entrypoint-initdb.d
+
+  adminer:
+    container_name: test_adminer
+    image: adminer    
+    restart: always
+    links:
+      - "db"
+    networks:
+      - internal  
+
+  nginx:
+    container_name: test_nginx
+    image: "nginx:stable"      
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web
+      - internal
+
+    env_file:
+      - .env
+    links:       
+      - adminer     
