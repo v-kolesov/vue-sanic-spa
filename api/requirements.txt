@@ -1,0 +1,7 @@
+sanic
+asyncio_redis
+asyncpg
+passlib
+pytest
+marshmallow
+aiohttp
