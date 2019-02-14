@@ -5,7 +5,36 @@ networks:
   internal:
     driver: bridge
 
-services:  
+services:    
+  ws: 
+    container_name: test_ws
+    build: 
+      context: ./ws
+    tty: true
+    restart: always
+    volumes: 
+      - "./ws:/app"    
+    links:      
+      - "redis"     
+    networks:      
+      - internal
+    env_file:
+      - .env
+
+  app:
+    build: ./app
+    tty: true
+    user: "${UID}:${GID}"
+    container_name: test_app
+    volumes:
+      - "./app:/app"
+    networks:
+      - internal
+    links:
+      - "api" 
+    env_file:
+      - .env  
+  
   api: 
     container_name: test_api
     build: 
@@ -13,7 +42,7 @@ services:
     tty: true
     restart: always
     volumes: 
-      - "./api:/app"    
+      - "./api:/app" 
     links:
       - "db" 
       - "redis"     
@@ -28,7 +57,7 @@ services:
     container_name: test_redis
     image: "redis:latest"
     volumes:
-      - ${PWD} .data/redis:/data        
+      - ${PWD}.data/redis:/data        
     networks:
       - internal
 
@@ -70,4 +99,4 @@ services:
     env_file:
       - .env
     links:       
-      - adminer     
+      - adminer          
