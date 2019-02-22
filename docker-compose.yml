@@ -10,12 +10,9 @@ services:
     container_name: test_ws
     build: 
       context: ./ws
-    tty: true
-    restart: always
+    tty: true    
     volumes: 
       - "./ws:/app"    
-    links:      
-      - "redis"     
     networks:      
       - internal
     env_file:
@@ -30,8 +27,6 @@ services:
       - "./app:/app"
     networks:
       - internal
-    links:
-      - "api" 
     env_file:
       - .env  
   
@@ -40,12 +35,8 @@ services:
     build: 
       context: ./api
     tty: true
-    restart: always
     volumes: 
       - "./api:/app" 
-    links:
-      - "db" 
-      - "redis"     
     networks:      
       - internal
     env_file:
@@ -62,7 +53,6 @@ services:
       - internal
 
   db:
-    restart: always
     container_name: test_db
     image: postgres:alpine
     
@@ -79,9 +69,6 @@ services:
   adminer:
     container_name: test_adminer
     image: adminer    
-    restart: always
-    links:
-      - "db"
     networks:
       - internal  
 
@@ -98,5 +85,4 @@ services:
 
     env_file:
       - .env
-    links:       
-      - adminer          
+    
